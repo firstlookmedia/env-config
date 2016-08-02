@@ -3,6 +3,12 @@ env-config
 
 Share environment variables between server and client.
 
+### Install
+
+```
+$ npm install --save https://github.com/firstlookmedia/env-config
+```
+
 ### Usage
 
 On server
