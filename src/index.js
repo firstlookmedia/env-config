@@ -1,42 +1,14 @@
-import _ from 'lodash';
-
 // Config - Share environment variables between server and client
 
 const rootElementId = 'config';
 
+function isClient() {
+  return (typeof window !== 'undefined');
+}
+
 class SharedConfig {
-  constructor() {
-    this.desiredEnvVars = {};
-  }
-
-  isClient() {
-    return (typeof window !== 'undefined');
-  }
-  isServer() {
-    return (typeof process !== 'undefined');
-  }
-
-  registerEnvVar(varName, defaultValue) {
-    this.desiredEnvVars[varName] = {
-      name: varName,
-      defaultValue,
-    };
-  }
-
-  // extractVarsFromEnv tries to extract the desired values from the environemnt
-  extractVarsFromEnv() {
-    if (this.isServer()) {
-      // Iterate over desired env vars
-      _.each(this.desiredEnvVars, (envVar, varName) => {
-        let value = process.env[varName];
-
-        // fallback to default value if not found
-        value = value || envVar.defaultValue;
-
-        // Extend the config
-        this[varName] = value;
-      });
-    }
+  register(configs) {
+    Object.assign(this, configs);
   }
 
   // helper to insert this env on the page
@@ -51,17 +23,19 @@ class SharedConfig {
   }
 
   // in the browser, hydrate config as declared above
-  hydrateClient() {
-    if (this.isClient()) {
-      _.extend(this, JSON.parse(document.getElementById(rootElementId).textContent));
-    }
+  hydrate() {
+    Object.assign(
+      this,
+      JSON.parse(document.getElementById(rootElementId).textContent)
+    );
   }
 }
 
 const envConfig = new SharedConfig();
 
 // parse the server-rendered script tag
-// NOTE: this line will only have effect when run on the client
-envConfig.hydrateClient();
+if (isClient()) {
+  envConfig.hydrate();
+}
 
 export default envConfig;
