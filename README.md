@@ -14,9 +14,9 @@ $ npm install --save https://github.com/firstlookmedia/env-config
 Register config values on the server:
 
 ```javascript
-import envConfig from 'env-config';
+import config from 'env-config';
 
-envConfig.register({
+config.register({
   ORIGIN: 'https://thenib.com',
 });
 ```
@@ -27,18 +27,19 @@ Then when rendering the index page on the server, include the output of `envConf
 app.use('*', (req, res) => {
   // This renders an index page template
   res.render('index', {
-    envConfigHtml: envConfig.renderScriptTag(),
+    configHTML: config.renderScriptTag(),
   });
 });
 
 ```
 
-In the browser:
+In the browser, call `hydrate()` before initializing:
 
 ```javascript
-import envConfig from 'env-config';
+import config from 'env-config';
+config.hydrate();
 
-const origin = envConfig.ORIGIN;
+const origin = config.ORIGIN;
 ```
 
 ---
