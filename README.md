@@ -11,36 +11,57 @@ $ npm install --save https://github.com/firstlookmedia/env-config
 
 ### Usage
 
-Register config values on the server:
+Register config values on the server, include them in the HTML output:
 
-```javascript
+```jsx
+// server.js
+// ...
 import config from 'env-config';
+import App from './App.jsx';
 
-config.register({
-  ORIGIN: 'https://thenib.com',
-});
+config.register({ ORIGIN: 'http://foobar' });
+
+const app = express();
+app.get('*', (req, res) => {
+  const reactOutput = ReactDOMServer.renderToString(<App />);
+  res.send(`<!doctype html>
+<html>
+  ...
+  <body>
+    <div id="root">${reactOutput}</div>
+    
+    ${config.renderScriptTag()}
+    
+  </body>
+</html>`);
+})
 ```
 
-Then when rendering the index page on the server, include the output of `envConfig.renderScriptTag()`:
+Hydrate in the browser:
 
 ```javascript
-app.use('*', (req, res) => {
-  // This renders an index page template
-  res.render('index', {
-    configHTML: config.renderScriptTag(),
-  });
-});
-
-```
-
-In the browser, call `hydrate()` before initializing:
-
-```javascript
+// index.js
+// ...
 import config from 'env-config';
+import App from './App';
+
 config.hydrate();
 
-const origin = config.ORIGIN;
+ReactDOM.render(root, <App />);
 ```
+
+Access values in modules that render on the server as well the browser:
+
+```jsx
+// App.jsx
+import config from 'env-config';
+export default () => (
+  <div>{config.ORIGIN}</div>
+);
+
+```
+
+---
 
 For usage in tests, call `register()` with mock configs:
 
@@ -71,19 +92,4 @@ const App = require('./App');
 // ...
 ```
 
-This is usually not an issue if you refer to `config` inside of your functions/classes:
-
-```jsx
-// App.jsx
-import config from 'env-config';
-export default () => (
-  <div>{config.ORIGIN}</div>
-);
-
-// index.js
-// ...
-import config from 'env-config';
-import App from './App';
-config.register({ ORIGIN: 'http://foobar' });
-ReactDOM.render(root, <App />);
-```
+This is usually not an issue if you refer to `config` inside of your functions/classes
