@@ -42,6 +42,17 @@ config.hydrate();
 const origin = config.ORIGIN;
 ```
 
+For usage in tests, call `register()` with mock configs:
+
+```javascript
+import config from 'env-config';
+config.register({ ORIGIN: 'http://mock' });
+
+describe('test..', () => {
+  // ...
+});
+```
+
 ---
 
 Limitations
