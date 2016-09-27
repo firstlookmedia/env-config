@@ -57,7 +57,7 @@ describe('test..', () => {
 
 Limitations
 
-Components that import env-config won't have them immediately on the server,
+Modules that import env-config won't see registered values immediately on the server,
 since `import` statements all get hoisted to the top. If this is a problem,
 the server file should use `require()` like so:
 
@@ -68,5 +68,22 @@ config.register({
 });
 
 const App = require('./App');
-...
+// ...
+```
+
+This is usually not an issue if you refer to `config` inside of your functions/classes:
+
+```jsx
+// App.jsx
+import config from 'env-config';
+export default () => (
+  <div>{config.ORIGIN}</div>
+);
+
+// index.js
+// ...
+import config from 'env-config';
+import App from './App';
+config.register({ ORIGIN: 'http://foobar' });
+ReactDOM.render(root, <App />);
 ```
