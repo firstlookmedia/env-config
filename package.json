@@ -1,5 +1,5 @@
 {
-  "name": "env-config",
+  "name": "@firstlookmedia/env-config",
   "version": "0.2.0",
   "description": "share environment variables with the client",
   "main": "index.js",
